@@ -9,7 +9,10 @@ import com.android.bitcoinbip39.bip39.MnemonicGenerator;
 import com.android.bitcoinbip39.bip39.Words;
 import com.android.bitcoinbip39.bip39.wordlists.English;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.security.SecureRandom;
+import java.util.Base64;
 
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 
@@ -26,15 +29,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         StringBuilder sb = new StringBuilder();
-        StringBuilder out = new StringBuilder();
         byte[] entropy = new byte[Words.TWELVE.byteLength()];
         new SecureRandom().nextBytes(entropy);
-        for(int i = 0;i < entropy.length;i++) {
-            out.append(entropy[i]);
-        }
+
+        String value = Util.bytesToHexFun2(entropy);
+        Log.e("haocheng", "---------->value = " + value);
 
         new MnemonicGenerator(English.INSTANCE)
                 .createMnemonic(entropy, sb);
+
+        Log.e("haocheng", "---------->sb = " + sb);
 
         // Example of a call to a native method
         TextView tv = (TextView) findViewById(R.id.sample_text);

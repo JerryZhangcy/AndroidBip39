@@ -23,6 +23,9 @@ package com.android.bitcoinbip39.bip39;
 
 import android.util.Log;
 
+import com.android.bitcoinbip39.MainActivity;
+import com.android.bitcoinbip39.Util;
+
 import java.util.Arrays;
 
 import static com.android.bitcoinbip39.bip39.ByteUtils.next11Bits;
@@ -81,7 +84,10 @@ public final class MnemonicGenerator {
             final byte[] entropy,
             final StringBuilder sb) {
         final int[] wordIndexes = wordIndexes(entropy);
-        Log.e("fuck","-----createMnemonic---->" + wordIndexes.length);
+        Log.e("haocheng","-----createMnemonic---->" + wordIndexes.length);
+        for(int i = 0;i < wordIndexes.length;i++) {
+            Log.e("haocheng","-------->wordIndexes[" + i + "] = " + wordIndexes[i]);
+        }
         try {
             createMnemonic(wordIndexes, sb);
         } finally {
@@ -101,19 +107,17 @@ public final class MnemonicGenerator {
 
     private static int[] wordIndexes(byte[] entropy) {
         final int ent = entropy.length * 8;
-        Log.e("fuck","wordIndexes--------->  " + ent);
         entropyLengthPreChecks(ent);
 
         final byte[] entropyWithChecksum = Arrays.copyOf(entropy, entropy.length + 1);
-        Log.e("fuck","wordIndexes------aaa--->  " + entropyWithChecksum.length);
-        entropyWithChecksum[entropy.length] = firstByteOfSha256(entropy);
-        Log.e("fuck","wordIndexes------bbb--->  " + entropyWithChecksum.length);
+        entropyWithChecksum[entropy.length] = Util.Encrypt(entropy,"")[0];//firstByteOfSha256(entropy);
+        Log.e("haocheng", "---------->entropyWithChecksum = " + Util.bytesToHexFun2(entropyWithChecksum));
 
         //checksum length
         final int cs = ent / 32;
         //mnemonic length
         final int ms = (ent + cs) / 11;
-        Log.e("fuck","wordIndexes------ccc--->  cs = " + cs + " ms = " + ms);
+        Log.e("haocheng","wordIndexes------ccc--->  cs = " + cs + " ms = " + ms);
         //get the indexes into the word list
         final int[] wordIndexes = new int[ms];
         for (int i = 0, wi = 0; wi < ms; i += 11, wi++) {
@@ -124,6 +128,7 @@ public final class MnemonicGenerator {
 
     static byte firstByteOfSha256(final byte[] entropy) {
         final byte[] hash = sha256(entropy);
+        Log.e("haocheng", "---------->firstByteOfSha256 = " + Util.bytesToHexFun2(hash));
         final byte firstByte = hash[0];
         Arrays.fill(hash, (byte) 0);
         return firstByte;
