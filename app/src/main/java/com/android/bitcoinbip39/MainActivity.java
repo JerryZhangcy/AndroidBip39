@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.android.bitcoinbip39.bip39.MnemonicGenerator;
+import com.android.bitcoinbip39.bip39.SeedCalculator;
 import com.android.bitcoinbip39.bip39.Words;
 import com.android.bitcoinbip39.bip39.wordlists.English;
 
@@ -29,25 +30,27 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         StringBuilder sb = new StringBuilder();
-        byte[] entropy = new byte[Words.TWELVE.byteLength()];
+        byte[] entropy = new byte[Words.TWENTY_FOUR.byteLength()];
         new SecureRandom().nextBytes(entropy);
 
-        String value = Util.bytesToHexFun2(entropy);
-        Log.e("haocheng", "---------->value = " + value);
+        String entropyStr = Util.bytesToHexFun2(entropy);
 
         new MnemonicGenerator(English.INSTANCE)
                 .createMnemonic(entropy, sb);
 
-        Log.e("haocheng", "---------->sb = " + sb);
+        byte[] seed = new SeedCalculator().calculateSeed(sb.toString(), "");
+
+        String seedStr = Util.bytesToHexFun2(seed);
 
         // Example of a call to a native method
-        TextView tv = (TextView) findViewById(R.id.sample_text);
-        tv.setText(sb.toString());
+        ((TextView) findViewById(R.id.entropy)).setText("Entropy:" + "\n" + entropyStr);
+        ((TextView) findViewById(R.id.mnemonic)).setText("Mnemonic:" + "\n" + sb.toString());
+        ((TextView) findViewById(R.id.seed)).setText("Seed:" + "\n" + seedStr);
     }
 
     /**
      * A native method that is implemented by the 'native-lib' native library,
      * which is packaged with this application.
      */
-    public native String stringFromJNI();
+    //public native String stringFromJNI();
 }
